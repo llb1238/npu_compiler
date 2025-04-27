@@ -52,8 +52,11 @@ void yyerror(char * msg);
 // 运算符
 %token T_ASSIGN T_SUB T_ADD T_MUL T_DIV T_MOD T_LT T_LE T_GT T_GE T_EQ T_NEQ T_AND T_OR T_NOT
 
+<<<<<<< HEAD
 %token <float_num> T_FLOAT_LITERAL
 %token <type> T_FLOAT
+=======
+>>>>>>> update : frontend/flexbison 完成了pdf上的基本要求
 
 
 // 非终结符
@@ -189,10 +192,17 @@ FuncFParamArrayDim
         }
     }
     ;
+<<<<<<< HEAD
 
 
 
 
+=======
+
+
+
+
+>>>>>>> update : frontend/flexbison 完成了pdf上的基本要求
 
 // 语句块的文法Block ： T_L_BRACE BlockItemList? T_R_BRACE
 // 其中?代表可有可无，在bison中不支持，需要拆分成两个产生式
@@ -398,8 +408,146 @@ ConstInitValList
     }
     ;
 
+<<<<<<< HEAD
 
 
+=======
+// 变量定义包含变量名，实际上还有初值，这里没有实现。
+VarDef
+    : T_ID {
+        $$ = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        free($1.id);
+    }
+    | T_ID ArrayDim {
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        free($1.id);
+        $$ = create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
+    }
+    | T_ID T_ASSIGN InitVal {
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        free($1.id);
+        $$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, id_node, $3);
+    }
+	| T_ID ArrayDim T_ASSIGN InitVal {
+		ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+		free($1.id);
+
+		// 数组声明
+		ast_node * array_decl = create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
+
+		// 数组初始化（用 initval 节点包一层）
+		ast_node * array_init = create_contain_node(ast_operator_type::AST_OP_INITVAL, $4);
+
+		// 变量声明节点：类型(type)+数组(array_decl)+初值(array_init)
+		$$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, array_decl, array_init);
+	}
+
+    ;
+
+
+ArrayDim
+    : T_L_SQUARE ConstExp T_R_SQUARE {
+        $$ = create_contain_node(ast_operator_type::AST_OP_ARRAY_DIM, $2);
+    }
+    | ArrayDim T_L_SQUARE ConstExp T_R_SQUARE {
+        $$ = $1->insert_son_node(create_contain_node(ast_operator_type::AST_OP_ARRAY_DIM, $3));
+    }
+    ;
+
+ConstExp
+    : T_DIGIT {
+        $$ = ast_node::New($1);
+    }
+    | AddExp {
+        $$ = $1;
+    }
+    ;
+
+
+
+
+InitVal
+    : Expr {
+        // 简单初始化
+        $$ = create_contain_node(ast_operator_type::AST_OP_INITVAL, $1);
+    }
+    | T_L_BRACE T_R_BRACE {
+        // 空初始化 {}
+        $$ = create_contain_node(ast_operator_type::AST_OP_INITVAL);
+    }
+    | T_L_BRACE InitValList T_R_BRACE {
+        // 多个初始化器 {initval, initval, ...}
+        $$ = create_contain_node(ast_operator_type::AST_OP_INITVAL, $2);
+    }
+    ;
+
+InitValList
+    : InitVal {
+        $$ = create_contain_node(ast_operator_type::AST_OP_INITVAL, $1);
+    }
+    | InitValList T_COMMA InitVal {
+        $$ = $1->insert_son_node($3);
+    }
+    ;
+
+ConstDecl
+    : T_CONST BasicType ConstDefList T_SEMICOLON {
+        ast_node * type_node = create_type_node($2);
+        $$ = create_contain_node(ast_operator_type::AST_OP_CONST_DECL, type_node, $3);
+    }
+    ;
+
+ConstDefList
+    : ConstDef {
+        $$ = $1;
+    }
+    | ConstDefList T_COMMA ConstDef {
+        $$ = $1->insert_son_node($3);
+    }
+    ;
+
+ConstDef
+    : T_ID T_ASSIGN ConstInitVal {
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        free($1.id);
+        $$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, id_node, $3);
+    }
+	| T_ID ArrayDim T_ASSIGN ConstInitVal {
+		ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+		free($1.id);
+
+		ast_node * array_decl = create_contain_node(ast_operator_type::AST_OP_CONST_ARRAY_DECL, id_node, $2);
+
+		ast_node * array_init = create_contain_node(ast_operator_type::AST_OP_CONST_INITVAL, $4);
+
+		$$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, array_decl, array_init);
+	}
+    ;
+
+ConstInitVal
+    : ConstExp {
+        $$ = create_contain_node(ast_operator_type::AST_OP_CONST_INITVAL, $1);
+    }
+    | T_L_BRACE T_R_BRACE {
+        $$ = create_contain_node(ast_operator_type::AST_OP_CONST_INITVAL);
+    }
+    | T_L_BRACE ConstInitValList T_R_BRACE {
+        $$ = create_contain_node(ast_operator_type::AST_OP_CONST_INITVAL, $2);
+    }
+    ;
+
+ConstInitValList
+    : ConstInitVal {
+        $$ = create_contain_node(ast_operator_type::AST_OP_CONST_INITVAL, $1);
+    }
+    | ConstInitValList T_COMMA ConstInitVal {
+        $$ = $1->insert_son_node($3);
+    }
+    ;
+
+
+
+>>>>>>> update : frontend/flexbison 完成了pdf上的基本要求
 
 // 基本类型，目前只支持整型
 BasicType
@@ -461,6 +609,7 @@ IFStmt
 
 // 表达式文法 expr : LOrExp
 // 表达式目前只支持加法与减法运算
+<<<<<<< HEAD
 Expr
     : T_DIGIT {
         $$ = ast_node::New($1);
@@ -468,6 +617,12 @@ Expr
     | LOrExp {
         $$ = $1;
     }
+=======
+Expr : LOrExp {
+		// 直接传递给归约后的节点
+		$$ = $1;
+	}
+>>>>>>> update : frontend/flexbison 完成了pdf上的基本要求
 	;
 
 // 加减表达式文法：addExp: unaryExp (addOp unaryExp)*

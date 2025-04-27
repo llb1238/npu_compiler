@@ -1,4 +1,4 @@
-///
+﻿///
 /// @file AST.cpp
 /// @brief 抽象语法树AST管理的实现
 /// @author zenglj (zenglj@live.com)
