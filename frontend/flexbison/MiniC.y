@@ -52,6 +52,8 @@ void yyerror(char * msg);
 // 运算符
 %token T_ASSIGN T_SUB T_ADD T_MUL T_DIV T_MOD T_LT T_LE T_GT T_GE T_EQ T_NEQ T_AND T_OR T_NOT
 
+%token <float_num> T_FLOAT_LITERAL
+%token <type> T_FLOAT
 
 
 // 非终结符
@@ -400,10 +402,15 @@ ConstInitValList
 
 
 // 基本类型，目前只支持整型
-BasicType: T_INT {
-		$$ = $1;
-	}
-	;
+BasicType
+    : T_INT {
+        $$ = $1;
+    }
+    | T_FLOAT {
+        $$ = $1;
+    }
+    ;
+
 
 // 语句文法：statement:T_RETURN expr T_SEMICOLON | lVal T_ASSIGN expr T_SEMICOLON
 // | block | expr? T_SEMICOLON
@@ -616,6 +623,9 @@ PrimaryExp :  T_L_PAREN Expr T_R_PAREN {
 		// 直接传递到归约后的非终结符号PrimaryExp
 		$$ = $1;
 	}
+    | T_FLOAT_LITERAL {
+        $$ = ast_node::New($1);
+    }
 	;
 
 // 实参表达式支持逗号分隔的若干个表达式
