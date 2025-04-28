@@ -42,6 +42,8 @@
 ")"         { return T_R_PAREN; }
 "{"         { return T_L_BRACE; }
 "}"         { return T_R_BRACE; }
+"["         { return T_L_SQUARE; }
+"]"         { return T_R_SQUARE; }
 
 ";"         { return T_SEMICOLON; }
 ","         { return T_COMMA; }
@@ -49,6 +51,26 @@
 "="         { return T_ASSIGN; }
 "+"         { return T_ADD; }
 "-"         { return T_SUB; }
+"*"         { return T_MUL; }
+"/"         { return T_DIV; }
+"%"         { return T_MOD; }
+"<"         { return T_LT; }
+"<="        { return T_LE; }
+">"         { return T_GT; }
+">="        { return T_GE; }
+"=="        { return T_EQ; }
+"!="        { return T_NEQ; }
+"&&"        { return T_AND; }
+"||"        { return T_OR; }
+"!"        { return T_NOT; }
+"if"        { return T_IF; }
+"else"      { return T_ELSE; }
+"while"     { return T_WHILE; }
+"break"     { return T_BREAK; }
+"continue"  { return T_CONTINUE; }
+"const"     { return T_CONST; }
+
+
 
 
 "0"|[1-9][0-9]*	{
