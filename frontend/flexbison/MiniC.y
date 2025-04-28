@@ -129,14 +129,14 @@ CompileUnit
 
 // 函数定义，目前支持整数返回类型，不支持形参
 FuncDef
-    : T_INT T_ID T_L_PAREN T_R_PAREN Block {
+    :  BasicType T_ID T_L_PAREN T_R_PAREN Block {
         type_attr funcReturnType = $1;
         var_id_attr funcId = $2;
 		ast_node * formalParamsNode = create_contain_node(ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS);
         ast_node * blockNode = $5;
         $$ = create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
     }
-    | T_INT T_ID T_L_PAREN FormalParamList T_R_PAREN Block {
+    | BasicType T_ID T_L_PAREN FormalParamList T_R_PAREN Block {
         type_attr funcReturnType = $1;
         var_id_attr funcId = $2;
         ast_node * formalParamsNode = $4;
