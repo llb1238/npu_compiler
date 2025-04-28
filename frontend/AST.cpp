@@ -1,4 +1,4 @@
-﻿///
+///
 /// @file AST.cpp
 /// @brief 抽象语法树AST管理的实现
 /// @author zenglj (zenglj@live.com)
@@ -405,3 +405,47 @@ ast_node * add_var_decl_node(ast_node * stmt_node, var_id_attr & id)
 
     return stmt_node;
 }
+
+ast_node * create_if_node(ast_node * cond, ast_node * then_stmt)
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_IF);
+
+    (void) node->insert_son_node(cond);
+    (void) node->insert_son_node(then_stmt);
+
+    return node;
+}
+
+ast_node * create_if_else_node(ast_node * cond, ast_node * then_stmt, ast_node * else_stmt)
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_IF_ELSE);
+
+    (void) node->insert_son_node(cond);
+    (void) node->insert_son_node(then_stmt);
+    (void) node->insert_son_node(else_stmt);
+
+    return node;
+}
+
+ast_node * create_while_node(ast_node * cond, ast_node * body_stmt)
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_WHILE);
+
+    (void) node->insert_son_node(cond);
+    (void) node->insert_son_node(body_stmt);
+
+    return node;
+}
+
+ast_node * create_break_node()
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_BREAK);
+    return node;
+}
+
+ast_node * create_continue_node()
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_CONTINUE);
+    return node;
+}
+
