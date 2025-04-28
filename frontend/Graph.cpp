@@ -1,4 +1,4 @@
-﻿///
+///
 /// @file Graph.cpp
 /// @brief 利用graphviz图形化显示AST，本文件采用C语言实现，没有采用C++的类实现，注意AST的遍历方式和其它的不同
 /// @author zenglj (zenglj@live.com)
@@ -71,6 +71,81 @@ string getNodeName(ast_node * astnode)
             break;
         case ast_operator_type::AST_OP_SUB:
             nodeName = "-";
+            break;
+        case ast_operator_type::AST_OP_MUL:
+            nodeName = "*";
+            break;
+        case ast_operator_type::AST_OP_DIV:
+            nodeName = "/";
+            break;
+        case ast_operator_type::AST_OP_MOD:
+            nodeName = "%";
+            break;
+        case ast_operator_type::AST_OP_LT:
+            nodeName = "<";
+            break;
+        case ast_operator_type::AST_OP_LE:
+            nodeName = "<=";
+            break;
+        case ast_operator_type::AST_OP_GT:
+            nodeName = ">";
+            break;
+        case ast_operator_type::AST_OP_GE:
+            nodeName = ">=";
+            break;
+        case ast_operator_type::AST_OP_EQ:
+            nodeName = "==";
+            break;
+        case ast_operator_type::AST_OP_NEQ:
+            nodeName = "!=";
+            break;
+        case ast_operator_type::AST_OP_AND:
+            nodeName = "&&";
+            break;
+        case ast_operator_type::AST_OP_OR:
+            nodeName = "||";
+            break;
+        case ast_operator_type::AST_OP_NEG:
+            nodeName = "NEG";
+            break;
+        case ast_operator_type::AST_OP_NOT:
+            nodeName = "!";
+            break;
+        case ast_operator_type::AST_OP_IF:
+            nodeName = "if";
+            break;
+        case ast_operator_type::AST_OP_IF_ELSE:
+            nodeName = "if-else";
+            break;
+        case ast_operator_type::AST_OP_WHILE:
+            nodeName = "while";
+            break;
+        case ast_operator_type::AST_OP_BREAK:
+            nodeName = "break";
+            break;
+        case ast_operator_type::AST_OP_CONTINUE:
+            nodeName = "continue";
+            break;
+        case ast_operator_type::AST_OP_ARRAY_ACCESS:
+            nodeName = "[]";
+            break;
+        case ast_operator_type::AST_OP_VAR_ARRAY_DECL:
+            nodeName = "array-decl";
+            break;
+        case ast_operator_type::AST_OP_INITVAL:
+            nodeName = "initval";
+            break;
+        case ast_operator_type::AST_OP_CONST_DECL:
+            nodeName = "const-decl";
+            break;
+        case ast_operator_type::AST_OP_CONST_ARRAY_DECL:
+            nodeName = "const-array-decl";
+            break;
+        case ast_operator_type::AST_OP_CONST_INITVAL:
+            nodeName = "const-initval";
+            break;
+        case ast_operator_type::AST_OP_ARRAY_DIM:
+            nodeName = "dim";
             break;
         case ast_operator_type::AST_OP_ASSIGN:
             nodeName = "=";
@@ -193,6 +268,13 @@ Agnode_t * graph_visit_ast_node(Agraph_t * g, ast_node * astnode)
         return nullptr;
     }
 
+    // // 空的 formal-params / real-params 不生成节点
+    // if ((astnode->node_type == ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS ||
+    //     astnode->node_type == ast_operator_type::AST_OP_FUNC_REAL_PARAMS) &&
+    //     astnode->sons.empty()) {
+    //     return nullptr;
+    // }
+
     Agnode_t * graph_node;
 
     if (astnode->isLeafNode()) {
@@ -211,6 +293,10 @@ Agnode_t * graph_visit_ast_node(Agraph_t * g, ast_node * astnode)
 /// @param filePath 转换成图形的文件名，主要要通过文件名后缀来区分图片的类型，如png，svg，pdf等皆可
 void OutputAST(ast_node * root, const std::string filePath)
 {
+    if (root == nullptr) {
+        fprintf(stderr, "Error: AST root is null, nothing to output!\n");
+        return;
+    }
     // 创建GV的上下文
     GVC_t * gv = gvContext();
 
