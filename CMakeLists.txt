@@ -177,6 +177,8 @@ set(IR_SRCS
 	ir/Types/LabelType.cpp
 	ir/Types/IntegerType.h
 	ir/Types/IntegerType.cpp
+ 	ir/Types/FloatType.h
+	ir/Types/FloatType.cpp
 	ir/Values/ConstInt.h
 	ir/Values/FormalParam.h
 	ir/Values/GlobalVariable.h
