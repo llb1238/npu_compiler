@@ -128,6 +128,9 @@ protected:
     /// @brief AST节点运算符与动作函数关联的映射表
     std::unordered_map<ast_operator_type, ast2ir_handler_t> ast2ir_handlers;
 
+    bool ir_if_statement(ast_node * node);
+    bool ir_if_else_statement(ast_node * node);
+
 private:
     /// @brief 抽象语法树的根
     ast_node * root;

@@ -110,6 +110,12 @@ ast_node * IRGenerator::ir_visit_ast_node(ast_node * node)
         node = nullptr;
     }
 
+    if (node->node_type == ast_operator_type::AST_OP_IF) {
+        return ir_if_statement(node);
+    } else if (node->node_type == ast_operator_type::AST_OP_IF_ELSE) {
+        return ir_if_else_statement(node);
+    }
+
     return node;
 }
 
@@ -612,5 +618,74 @@ bool IRGenerator::ir_variable_declare(ast_node * node)
 
     node->val = module->newVarValue(node->sons[0]->type, node->sons[1]->name);
 
+    return true;
+}
+
+bool IRGenerator::ir_if_statement(ast_node * node) {
+    // 处理条件表达式
+    ast_node * cond = node->sons[0];
+    ast_node * then_stmt = node->sons[1];
+
+    // 生成条件的 IR
+    if (!ir_visit_ast_node(cond)) {
+        return false; // 条件表达式翻译失败
+    }
+
+    // 创建跳转标签
+    LabelInstruction * trueLabel = new LabelInstruction(module->getCurrentFunction());
+    LabelInstruction * endLabel = new LabelInstruction(module->getCurrentFunction());
+
+    // 生成条件跳转指令
+    // 假设有一个方法来生成条件跳转
+    add_instruction(new GotoInstruction(module->getCurrentFunction(), trueLabel, cond->val));
+
+    // 处理 then 语句
+    if (!ir_visit_ast_node(then_stmt)) {
+        return false; // then 语句翻译失败
+    }
+
+    // 跳转到结束标签
+    add_instruction(new GotoInstruction(module->getCurrentFunction(), endLabel));
+
+    // 添加标签
+    add_instruction(trueLabel);
+    return true;
+}
+
+bool IRGenerator::ir_if_else_statement(ast_node * node) {
+    // 处理条件表达式
+    ast_node * cond = node->sons[0];
+    ast_node * then_stmt = node->sons[1];
+    ast_node * else_stmt = node->sons[2];
+
+    // 生成条件的 IR
+    if (!ir_visit_ast_node(cond)) {
+        return false; // 条件表达式翻译失败
+    }
+
+    // 创建跳转标签
+    LabelInstruction * trueLabel = new LabelInstruction(module->getCurrentFunction());
+    LabelInstruction * falseLabel = new LabelInstruction(module->getCurrentFunction());
+    LabelInstruction * endLabel = new LabelInstruction(module->getCurrentFunction());
+
+    // 生成条件跳转指令
+    add_instruction(new GotoInstruction(module->getCurrentFunction(), trueLabel, cond->val));
+
+    // 处理 then 语句
+    if (!ir_visit_ast_node(then_stmt)) {
+        return false; // then 语句翻译失败
+    }
+
+    // 跳转到结束标签
+    add_instruction(new GotoInstruction(module->getCurrentFunction(), endLabel));
+
+    // 添加 else 标签
+    add_instruction(falseLabel);
+    if (!ir_visit_ast_node(else_stmt)) {
+        return false; // else 语句翻译失败
+    }
+
+    // 添加结束标签
+    add_instruction(endLabel);
     return true;
 }
