@@ -1,4 +1,4 @@
-﻿///
+///
 /// @file AST.h
 /// @brief 抽象语法树AST管理的头文件
 /// @author zenglj (zenglj@live.com)
@@ -88,6 +88,81 @@ enum class ast_operator_type : int {
 
     /// @brief 二元运算符*
     AST_OP_SUB, //
+
+    /// @brief 二元运算符 '*'
+    AST_OP_MUL,
+
+    /// @brief 二元运算符 '/'
+    AST_OP_DIV,
+
+    /// @brief 二元运算符 '%'
+    AST_OP_MOD,
+
+    /// @brief 小于运算符 '<'
+    AST_OP_LT,
+
+    /// @brief 小于等于运算符 '<='
+    AST_OP_LE,
+
+    /// @brief 大于运算符 '>'
+    AST_OP_GT,
+
+    /// @brief 大于等于运算符 '>='
+    AST_OP_GE,
+
+    /// @brief 等于运算符 '=='
+    AST_OP_EQ,
+
+    /// @brief 不等于运算符 '!='
+    AST_OP_NEQ,
+
+    /// @brief 逻辑与运算符 '&&'
+    AST_OP_AND,
+
+    /// @brief 逻辑或运算符 '||'
+    AST_OP_OR,
+
+    /// @brief 一元负号运算符 '-'
+    AST_OP_NEG,
+
+    /// @brief 逻辑非运算符 '!'
+    AST_OP_NOT,
+
+    /// @brief if语句
+    AST_OP_IF,
+
+    /// @brief if-else语句
+    AST_OP_IF_ELSE,
+
+    /// @brief while语句
+    AST_OP_WHILE,
+
+    /// @brief break语句
+    AST_OP_BREAK,
+
+    /// @brief continue语句
+    AST_OP_CONTINUE,
+
+    /// @brief 数组访问（下标访问）
+    AST_OP_ARRAY_ACCESS,
+
+    /// @brief 数组变量声明
+    AST_OP_VAR_ARRAY_DECL,
+
+    /// @brief 数组维度
+    AST_OP_ARRAY_DIM,
+
+    /// @brief 变量初始化器
+    AST_OP_INITVAL,
+
+    /// @brief 常量声明
+    AST_OP_CONST_DECL,
+
+    /// @brief 常量数组定义
+    AST_OP_CONST_ARRAY_DECL,
+
+    /// @brief 常量初始化器
+    AST_OP_CONST_INITVAL,
 
     // TODO 抽象语法树其它内部节点运算符追加
 
@@ -280,3 +355,18 @@ ast_node * create_var_decl_stmt_node(type_attr & type, var_id_attr & id);
 /// @return ast_node* 变量声明语句节点
 ///
 ast_node * add_var_decl_node(ast_node * stmt_node, var_id_attr & id);
+
+// 创建 if 节点
+ast_node * create_if_node(ast_node * cond, ast_node * then_stmt);
+
+// 创建 if-else 节点
+ast_node * create_if_else_node(ast_node * cond, ast_node * then_stmt, ast_node * else_stmt);
+
+// 创建 while 节点
+ast_node * create_while_node(ast_node * cond, ast_node * body_stmt);
+
+// 创建 break 节点
+ast_node * create_break_node();
+
+// 创建 continue 节点
+ast_node * create_continue_node();
