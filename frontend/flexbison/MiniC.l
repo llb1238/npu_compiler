@@ -71,7 +71,12 @@
 "const"     { return T_CONST; }
 
 
-
+[0-9]+"."[0-9]*([eE][+-]?[0-9]+)? |
+"."[0-9]+([eE][+-]?[0-9]+)? {
+    yylval.float_num.val = atof(yytext);
+    yylval.float_num.lineno = yylineno;
+    return T_FLOAT_LITERAL;
+}
 
 "0"|[1-9][0-9]*	{
                 // 词法识别无符号整数，注意对于负数，则需要识别为负号和无符号数两个Token
