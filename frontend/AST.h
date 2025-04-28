@@ -222,6 +222,10 @@ public:
     /// @param attr 无符号整数字面量
     ast_node(digit_int_attr attr);
 
+    /// @brief 
+    /// @param attr 
+    ast_node(digit_real_attr attr); // 【新增】浮点数字面量构造函数
+
     /// @brief 针对标识符ID的叶子构造函数
     /// @param attr 字符型标识符
     ast_node(var_id_attr attr);
@@ -251,6 +255,12 @@ public:
     /// @param val 词法值
     /// @param line_no 行号
     static ast_node * New(digit_int_attr attr);
+
+    /// @brief 创建无符号整数的叶子节点
+    /// @param val 词法值
+    /// @param line_no 行号
+    static ast_node * New(digit_real_attr attr); // 【新增】浮点数字面量 New
+
 
     /// @brief 创建标识符的叶子节点
     /// @param val 词法值
