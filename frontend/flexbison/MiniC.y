@@ -273,28 +273,59 @@ VarDeclExpr
 
 // 变量定义包含变量名，实际上还有初值，这里没有实现。
 VarDef
+    /* 纯声明 b */
     : T_ID {
-        $$ = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        // 先造好 id 叶子，再 free 原始字符串
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
         free($1.id);
+        // 再把这个叶子当作唯一孩子包成 var-decl
+        $$ = create_contain_node(
+            ast_operator_type::AST_OP_VAR_DECL,
+            id_node,
+            nullptr,
+            nullptr
+        );
     }
+    /* 数组声明 int a[3]; */
     | T_ID ArrayDim {
+        // 先生成 array-decl
         ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
         free($1.id);
-        $$ = create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
+        ast_node * array_decl =
+            create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
+        // 再把它包进 var-decl
+        $$ = create_contain_node(
+            ast_operator_type::AST_OP_VAR_DECL,
+            array_decl,
+            nullptr,
+            nullptr
+        );
     }
+    /* 初始化声明 int a = 3; */
     | T_ID T_ASSIGN InitVal {
+        var_id_attr vid = { $1.id, $1.lineno };
+        free($1.id);
+        // initval 做第二个孩子
+        $$ = create_contain_node(
+            ast_operator_type::AST_OP_VAR_DECL,
+            ast_node::New(vid),
+            $3,
+            nullptr
+        );
+    }
+    /* 数组加初始化 int a[3] = {1,2,3}; */
+    | T_ID ArrayDim T_ASSIGN InitVal {
         ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
         free($1.id);
-        $$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, id_node, $3);
+        ast_node * array_decl =
+            create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
+        $$ = create_contain_node(
+            ast_operator_type::AST_OP_VAR_DECL,
+            array_decl,
+            $4,
+            nullptr
+        );
     }
-	| T_ID ArrayDim T_ASSIGN InitVal {
-		ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
-		free($1.id);
-
-		ast_node * array_decl = create_contain_node(ast_operator_type::AST_OP_VAR_ARRAY_DECL, id_node, $2);
-
-		$$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, array_decl, $4);
-	}
     ;
 
 
