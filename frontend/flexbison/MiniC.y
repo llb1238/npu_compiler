@@ -303,12 +303,14 @@ VarDef
     }
     /* 初始化声明 int a = 3; */
     | T_ID T_ASSIGN InitVal {
-        var_id_attr vid = { $1.id, $1.lineno };
+        // 先根据 $1.id/$1.lineno 造出 var-id 叶子
+        ast_node * id_node = ast_node::New(var_id_attr{ $1.id, $1.lineno });
+        // 再 free 词法层的字符串
         free($1.id);
-        // initval 做第二个孩子
+        // 将 id_node 和 initval($3) 包成一个 var-decl
         $$ = create_contain_node(
             ast_operator_type::AST_OP_VAR_DECL,
-            ast_node::New(vid),
+            id_node,
             $3,
             nullptr
         );
