@@ -233,10 +233,10 @@ BlockItem
         $$ = $1;
     }
     | VarDecl {
-        $$ = create_contain_node(ast_operator_type::AST_OP_DECL_STMT, $1);
+        $$ = $1;
     }
     | ConstDecl {
-        $$ = create_contain_node(ast_operator_type::AST_OP_DECL_STMT, $1);
+        $$ = $1;
     }
 	;
 

@@ -110,10 +110,13 @@ ast_node * IRGenerator::ir_visit_ast_node(ast_node * node)
         node = nullptr;
     }
 
+    // 对于 if/if-else，先生成 IR，再返回 AST 节点本身
     if (node->node_type == ast_operator_type::AST_OP_IF) {
-        return ir_if_statement(node);
+        ir_if_statement(node);
+        return node;
     } else if (node->node_type == ast_operator_type::AST_OP_IF_ELSE) {
-        return ir_if_else_statement(node);
+        ir_if_else_statement(node);
+        return node;
     }
 
     return node;
@@ -635,9 +638,10 @@ bool IRGenerator::ir_if_statement(ast_node * node) {
     LabelInstruction * trueLabel = new LabelInstruction(module->getCurrentFunction());
     LabelInstruction * endLabel = new LabelInstruction(module->getCurrentFunction());
 
-    // 生成条件跳转指令
-    // 假设有一个方法来生成条件跳转
-    add_instruction(new GotoInstruction(module->getCurrentFunction(), trueLabel, cond->val));
+    // 无条件跳转到 trueLabel（原来的带 cond->val 的版本三参数不匹配）
+    node->blockInsts.addInst(
+        new GotoInstruction(module->getCurrentFunction(), trueLabel)
+    );
 
     // 处理 then 语句
     if (!ir_visit_ast_node(then_stmt)) {
@@ -645,10 +649,12 @@ bool IRGenerator::ir_if_statement(ast_node * node) {
     }
 
     // 跳转到结束标签
-    add_instruction(new GotoInstruction(module->getCurrentFunction(), endLabel));
+    node->blockInsts.addInst(
+        new GotoInstruction(module->getCurrentFunction(), endLabel)
+    );
 
     // 添加标签
-    add_instruction(trueLabel);
+    node->blockInsts.addInst(trueLabel);
     return true;
 }
 
@@ -668,8 +674,10 @@ bool IRGenerator::ir_if_else_statement(ast_node * node) {
     LabelInstruction * falseLabel = new LabelInstruction(module->getCurrentFunction());
     LabelInstruction * endLabel = new LabelInstruction(module->getCurrentFunction());
 
-    // 生成条件跳转指令
-    add_instruction(new GotoInstruction(module->getCurrentFunction(), trueLabel, cond->val));
+    // 无条件跳转到 trueLabel（去掉 cond->val）
+    node->blockInsts.addInst(
+        new GotoInstruction(module->getCurrentFunction(), trueLabel)
+    );
 
     // 处理 then 语句
     if (!ir_visit_ast_node(then_stmt)) {
@@ -677,15 +685,17 @@ bool IRGenerator::ir_if_else_statement(ast_node * node) {
     }
 
     // 跳转到结束标签
-    add_instruction(new GotoInstruction(module->getCurrentFunction(), endLabel));
+    node->blockInsts.addInst(
+        new GotoInstruction(module->getCurrentFunction(), endLabel)
+    );
 
     // 添加 else 标签
-    add_instruction(falseLabel);
+    node->blockInsts.addInst(falseLabel);
     if (!ir_visit_ast_node(else_stmt)) {
         return false; // else 语句翻译失败
     }
 
     // 添加结束标签
-    add_instruction(endLabel);
+    node->blockInsts.addInst(endLabel);
     return true;
 }
