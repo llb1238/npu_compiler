@@ -254,18 +254,22 @@ VarDecl : VarDeclExpr T_SEMICOLON {
 // 变量声明表达式，可支持逗号分隔定义多个
 VarDeclExpr
     : BasicType VarDef {
+        ast_node * decl_node = $2;
         // 创建类型节点
         ast_node * type_node = create_type_node($1);
 
+        decl_node->sons.insert(decl_node->sons.begin(), type_node);
+        
         // 创建变量定义节点
-        ast_node * decl_node = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, type_node, $2);
         decl_node->type = type_node->type;
-
         // 创建变量声明语句，并加入第一个变量
         $$ = create_var_decl_stmt_node(decl_node);
     }
     | VarDeclExpr T_COMMA VarDef {
-        // 不要重新建type了！！！直接把VarDef挂到原来的VarDecl语句上
+        Type * t = $1->sons[0]->type;
+        ast_node * type_node = ast_node::New(t);
+        $3->sons.insert($3->sons.begin(), type_node);
+        $3->type = t;
         $$ = $1->insert_son_node($3);
     }
 	;
@@ -303,17 +307,29 @@ VarDef
     }
     /* 初始化声明 int a = 3; */
     | T_ID T_ASSIGN InitVal {
-        // 先根据 $1.id/$1.lineno 造出 var-id 叶子
-        ast_node * id_node = ast_node::New(var_id_attr{ $1.id, $1.lineno });
-        // 再 free 词法层的字符串
+        // 1 造出标识符叶子
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
         free($1.id);
-        // 将 id_node 和 initval($3) 包成一个 var-decl
+
+        // 2 从 $3（是个 AST_OP_INITVAL）里提取真正的字面量子节点
+        ast_node * literal = nullptr;
+        if ($3 && !$3->sons.empty()) {
+            literal = $3->sons[0];
+        }
+
+        // 3 用 id_node 和 literal 构造一个新的 AST_OP_INITVAL
+        ast_node * init_node =
+            create_contain_node(ast_operator_type::AST_OP_INITVAL,
+                                id_node,
+                                literal,
+                                nullptr);
+
+        // 4 把这个 init_node 直接作为 VarDef 的结果，交给后面的 VarDeclExpr 插入类型和声明语句
         $$ = create_contain_node(
             ast_operator_type::AST_OP_VAR_DECL,
-            id_node,
-            $3,
-            nullptr
-        );
+            init_node,
+            nullptr,
+            nullptr);
     }
     /* 数组加初始化 int a[3] = {1,2,3}; */
     | T_ID ArrayDim T_ASSIGN InitVal {
