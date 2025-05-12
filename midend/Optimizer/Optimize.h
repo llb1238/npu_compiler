@@ -1,0 +1,7 @@
+#include "OptimizeConstCombine.h"
+#include "OptimizeDeadBlock.h"
+#include "OptimizeLoop.h"
+#include "OptimizeLoopUnroll.h"
+#include "OptimizeInline.h"
+#include "OptimizeMem2reg.h"
+#include "OptimizeBlockEliminate.h"
