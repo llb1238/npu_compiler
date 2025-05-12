@@ -134,14 +134,20 @@ FuncDef
         var_id_attr funcId = $2;
 		ast_node * formalParamsNode = create_contain_node(ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS);
         ast_node * blockNode = $5;
-        $$ = create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
+        ast_node* typeNode = create_type_node(funcReturnType);
+        ast_node* idNode   = ast_node::New(funcId.id, funcId.lineno);
+        free(funcId.id);
+        $$ = create_func_def(typeNode, idNode, blockNode, formalParamsNode);
     }
     | BasicType T_ID T_L_PAREN FormalParamList T_R_PAREN Block {
         type_attr funcReturnType = $1;
         var_id_attr funcId = $2;
         ast_node * formalParamsNode = $4;
         ast_node * blockNode = $6;
-        $$ = create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
+        ast_node* typeNode = create_type_node(funcReturnType);
+        ast_node* idNode   = ast_node::New(funcId.id, funcId.lineno);
+        free(funcId.id);
+        $$ = create_func_def(typeNode, idNode, blockNode, formalParamsNode);
     }
     ;
 

@@ -19,7 +19,6 @@
 
 #include "Common.h"
 #include "AST.h"
-#include "Antlr4Executor.h"
 #include "CodeGenerator.h"
 #include "CodeGeneratorArm32.h"
 #include "FlexBisonExecutor.h"
@@ -271,10 +270,7 @@ static int compile(std::string inputFile, std::string outputFile)
 
         // 创建词法语法分析器
         FrontEndExecutor * frontEndExecutor;
-        if (gFrontEndAntlr4) {
-            // Antlr4
-            frontEndExecutor = new Antlr4Executor(inputFile);
-        } else if (gFrontEndRecursiveDescentParsing) {
+        if (gFrontEndRecursiveDescentParsing) {
             // 递归下降分析法
             frontEndExecutor = new RecursiveDescentExecutor(inputFile);
         } else {

@@ -240,7 +240,21 @@ static ast_node * funcDef()
 
                     // 创建函数定义的节点，孩子有类型，函数名，语句块和形参(实际上无)
                     // create_func_def函数内会释放funcId中指向的标识符空间，切记，之后不要再释放，之前一定要是通过strdup函数或者malloc分配的空间
-                    return create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
+                    ast_node* typeNode = create_type_node(funcReturnType);
+
+                    // 再把 funcId 转成 ast_node*
+
+                    ast_node* idNode = ast_node::New(funcId.id, funcId.lineno);
+
+                    // 释放 strdup 的内存
+
+                    free(funcId.id);
+
+                    funcId.id = nullptr;
+
+                    // 调用 ast_node* 版 create_func_def
+
+                    return create_func_def(typeNode, idNode, blockNode, formalParamsNode);
 
                 } else {
                     semerror("函数定义缺少右小括号");

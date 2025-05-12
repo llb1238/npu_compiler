@@ -768,3 +768,39 @@ create_func_fparam_node(ast_node * type_node, ast_node * id_node, bool is_array,
 
     return node;
 }
+
+// -------------------------------------------------------------
+// Bison 调用名到现有函数的映射（wrapper）
+// -------------------------------------------------------------
+
+ast_node* create_while_node(ast_node* cond, ast_node* body) {
+    // 对应原来的 create_while_loop_node
+    return create_while_loop_node(cond, body);
+}
+
+ast_node* create_break_node() {
+    // 直接用原来的带行号版本，行号用 -1 占位
+    return create_break_stmt_node(-1);
+}
+
+ast_node* create_continue_node() {
+    return create_continue_stmt_node(-1);
+}
+
+ast_node* create_if_node(ast_node* cond, ast_node* then_stmt) {
+    // if 无 else 情况
+    return create_if_else_stmt_node(cond, then_stmt, nullptr);
+}
+
+ast_node* create_if_else_node(ast_node* cond, ast_node* then_stmt, ast_node* else_stmt) {
+    // if-else 情况
+    return create_if_else_stmt_node(cond, then_stmt, else_stmt);
+}
+
+ast_node* create_var_decl_stmt_node(ast_node* first_child) {
+    // 把 var_def 节点包装成声明语句
+    return create_contain_node(ast_operator_type::AST_OP_DECL_STMT,
+                               first_child,
+                               nullptr,
+                               nullptr);
+}
