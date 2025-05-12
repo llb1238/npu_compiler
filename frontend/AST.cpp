@@ -340,6 +340,16 @@ ast_node * create_if_else_stmt_node(ast_node * condition, ast_node * then_stmt, 
     return node;
 }
 
+// 在 frontend/AST.cpp 中相应位置（和其它 create_*_stmt_node 函数并列）加入：
+
+ast_node* create_if_stmt_node(ast_node* cond, ast_node* then_stmt) {
+    // 构造一个 AST_OP_IF_STMT 类型的节点
+    ast_node* node = new ast_node(ast_operator_type::AST_OP_IF_STMT);
+    node->insert_son_node(cond);
+    node->insert_son_node(then_stmt);
+    return node;
+}
+
 ast_node * create_break_stmt_node(int64_t line_no)
 {
     return new ast_node(ast_operator_type::AST_OP_BREAK, nullptr, line_no);

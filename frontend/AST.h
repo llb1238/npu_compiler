@@ -216,6 +216,7 @@ ast_node* create_array_init_val_node(std::vector<ast_node*>& elements);
 // 语句／表达式
 ast_node* create_expr_stmt_node(ast_node* expr);
 ast_node* create_nested_block_node(ast_node* block);
+ast_node* create_if_stmt_node(ast_node* cond, ast_node* then_stmt);
 ast_node* create_if_else_stmt_node(ast_node* cond,
                                    ast_node* then_stmt,
                                    ast_node* else_stmt);

@@ -259,37 +259,32 @@ VarDecl : VarDeclExpr T_SEMICOLON {
 
 // 变量声明表达式，可支持逗号分隔定义多个
 VarDeclExpr
-  /* 第一种：第一个变量，类型+定义（可能带初始化）*/
-  : BasicType VarDef {
-      // $2 本身就是一个 AST_OP_VAR_DECL 节点（只有名字或名字+initval）
-      ast_node * decl = $2;
-      // 1 新建类型节点
-      ast_node * typeNode = create_type_node($1);
-      // 2 把类型挂到 var-decl 的最前面
-      decl->sons.insert(decl->sons.begin(), typeNode);
-      // 3 把 decl->type 同步为这个类型
-      decl->type = typeNode->type;
-      // 4 用单参版本把它包成 decl-stmt
-      $$ = create_var_decl_stmt_node(decl);
-  }
-  /* 第二种：逗号分隔的后续变量，只带名字也可能带 initval */
+    : BasicType VarDef {
+        // 1 先造一个类型节点
+        ast_node * type_node = create_type_node($1);
+        // 2 在 VarDef 节点（$$ = create_var_def_node(...)）的 sons[0] 之前插入类型
+        ast_node * decl_node = $2;
+        decl_node->sons.insert(decl_node->sons.begin(), type_node);
+        // 3 把类型信息保存在 decl_node 上
+        decl_node->type = type_node->type;
+        // 4 最后用单参版 create_var_decl_stmt_node 包装成 decl-stmt
+        $$ = create_var_decl_stmt_node(decl_node);
+    }
   | VarDeclExpr T_COMMA VarDef {
-      // $1 是上一次返回的 decl-stmt
-      ast_node * stmt = $1;
-      // $3 是新产生的 AST_OP_VAR_DECL（只有名字或名字+initval）
-      ast_node * decl = $3;
-      // 从 stmt->type 里拿到原来的类型（BasicType 转换过来的 Type*）
-      Type * t = stmt->type;
-      // 新建一个类型节点
-      ast_node * typeNode = ast_node::New(t);
-      // 插到 decl（var-decl）的最前面
-      decl->sons.insert(decl->sons.begin(), typeNode);
-      // 同步 decl->type
-      decl->type = t;
-      // 把这个新的 var-decl 接到同一个 decl-stmt 下
-      $$ = stmt->insert_son_node(decl);
-  }
-  ;
+        // 同理处理逗号分隔的第二个及以后变量
+        ast_node * stmt = $1;                // 已经是 decl-stmt
+        // 从 stmt->sons[0]（第一个 var-def）的 type 字段取出类型
+        Type * t = stmt->sons[0]->type;
+        ast_node * type_node = ast_node::New(t);
+        // 在第三个词素（新的 VarDef）前插入类型
+        ast_node * new_def = $3;
+        new_def->sons.insert(new_def->sons.begin(), type_node);
+        new_def->type = t;
+        $$ = stmt->insert_son_node(new_def);
+    }
+;
+
+
 
 
 
@@ -298,15 +293,16 @@ VarDef
     /* 纯声明 b */
     : T_ID {
         // 先造好 id 叶子，再 free 原始字符串
-        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
-        free($1.id);
+        //ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        //free($1.id);
         // 再把这个叶子当作唯一孩子包成 var-decl
-        $$ = create_contain_node(
-            ast_operator_type::AST_OP_VAR_DECL,
-            id_node,
-            nullptr,
-            nullptr
-        );
+        //$$ = create_contain_node(
+            //ast_operator_type::AST_OP_VAR_DECL,
+            //id_node,
+            //nullptr,
+            //nullptr
+        //);
+        $$ = ast_node::New(var_id_attr{$1.id, $1.lineno}); free($1.id);
     }
     /* 数组声明 int a[3]; */
     | T_ID ArrayDim {
@@ -326,28 +322,32 @@ VarDef
     /* 初始化声明 int a = 3; */
     | T_ID T_ASSIGN InitVal {
         // 1 造出标识符叶子
-        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
-        free($1.id);
+        //ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        //free($1.id);
 
         // 2 从 $3（是个 AST_OP_INITVAL）里提取真正的字面量子节点
-        ast_node * literal = nullptr;
-        if ($3 && !$3->sons.empty()) {
-            literal = $3->sons[0];
-        }
+        //ast_node * literal = nullptr;
+        //if ($3 && !$3->sons.empty()) {
+        //    literal = $3->sons[0];
+        //}
 
         // 3 用 id_node 和 literal 构造一个新的 AST_OP_INITVAL
-        ast_node * init_node =
-            create_contain_node(ast_operator_type::AST_OP_INITVAL,
-                                id_node,
-                                literal,
-                                nullptr);
+        //ast_node * init_node =
+        //    create_contain_node(ast_operator_type::AST_OP_INITVAL,
+        //                        id_node,
+        //                        literal,
+        //                        nullptr);
 
         // 4 把这个 init_node 直接作为 VarDef 的结果，交给后面的 VarDeclExpr 插入类型和声明语句
-        $$ = create_contain_node(
-            ast_operator_type::AST_OP_VAR_DECL,
-            init_node,
-            nullptr,
-            nullptr);
+        //$$ = create_contain_node(
+        //   ast_operator_type::AST_OP_VAR_DECL,
+        //    init_node,
+        //    nullptr,
+        //    nullptr);
+        // 对于有初始化的变量，生成 VAR_DEF 节点
+        ast_node * id_node = ast_node::New(var_id_attr{$1.id, $1.lineno});
+        free($1.id);
+        $$ = create_var_def_node(id_node, $3);
     }
     /* 数组加初始化 int a[3] = {1,2,3}; */
     | T_ID ArrayDim T_ASSIGN InitVal {
@@ -491,7 +491,7 @@ Statement
         $$ = create_contain_node(ast_operator_type::AST_OP_RETURN, $2);
     }
     | LVal T_ASSIGN Expr T_SEMICOLON {
-        $$ = create_contain_node(ast_operator_type::AST_OP_ASSIGN, $1, $3);
+        $$ = create_assign_stmt_node($1, $3);
     }
     | Block {
         $$ = $1;
@@ -516,7 +516,7 @@ Statement
 
 IFStmt
     : T_IF T_L_PAREN Cond T_R_PAREN Statement {
-        $$ = create_if_node($3, $5);
+        $$ = create_if_stmt_node($3, $5); 
     }
     | T_IF T_L_PAREN Cond T_R_PAREN Statement T_ELSE IFStmt {
         $$ = create_if_else_node($3, $5, $7);
@@ -546,10 +546,10 @@ AddExp
         $$ = $1;
     }
     | MulExp AddOp MulExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     | AddExp AddOp MulExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     ;
 
@@ -561,10 +561,10 @@ MulExp
         $$ = $1;
     }
     | UnaryExp MulOp UnaryExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     | MulExp MulOp UnaryExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     ;
 
@@ -573,10 +573,10 @@ RelExp
         $$ = $1;
     }
     | AddExp RelOp AddExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     | RelExp RelOp AddExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     ;
 
@@ -585,10 +585,10 @@ EqExp
         $$ = $1;
     }
     | RelExp EqOp RelExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     | EqExp EqOp RelExp {
-        $$ = create_contain_node(ast_operator_type($2), $1, $3);
+        $$ = create_contain_node(static_cast<ast_operator_type>($2), $1, $3);
     }
     ;
 

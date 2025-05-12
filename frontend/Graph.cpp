@@ -67,6 +67,12 @@ string getNodeName(ast_node * astnode)
         case ast_operator_type::AST_OP_IF_ELSE_STMT:
             nodeName = "if-else-stmt";
             break;
+        case ast_operator_type::AST_OP_IF_ELSE:
+            nodeName = "if-else";
+            break;
+        case ast_operator_type::AST_OP_FUNC_REAL_PARAMS:
+            nodeName = "real-params";
+            break;
         case ast_operator_type::AST_OP_FUNC_DEF:
             nodeName = "func-def";
             break;
