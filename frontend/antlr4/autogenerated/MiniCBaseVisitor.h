@@ -15,23 +15,39 @@
 class  MiniCBaseVisitor : public MiniCVisitor {
 public:
 
-  virtual std::any visitCompileUnit(MiniCParser::CompileUnitContext *ctx) override {
+  virtual std::any visitCompUnit(MiniCParser::CompUnitContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitFuncDef(MiniCParser::FuncDefContext *ctx) override {
+  virtual std::any visitConstDeclaration(MiniCParser::ConstDeclarationContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitBlock(MiniCParser::BlockContext *ctx) override {
+  virtual std::any visitVarDeclaration(MiniCParser::VarDeclarationContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitBlockItemList(MiniCParser::BlockItemListContext *ctx) override {
+  virtual std::any visitConstDecl(MiniCParser::ConstDeclContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitBlockItem(MiniCParser::BlockItemContext *ctx) override {
+  virtual std::any visitIntType(MiniCParser::IntTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFloatType(MiniCParser::FloatTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitConstDef(MiniCParser::ConstDefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitScalarConstInitVal(MiniCParser::ScalarConstInitValContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitArrayConstInitVal(MiniCParser::ArrayConstInitValContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -39,19 +55,47 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitBasicType(MiniCParser::BasicTypeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitVarDef(MiniCParser::VarDefContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitReturnStatement(MiniCParser::ReturnStatementContext *ctx) override {
+  virtual std::any visitScalarInitVal(MiniCParser::ScalarInitValContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitAssignStatement(MiniCParser::AssignStatementContext *ctx) override {
+  virtual std::any visitArrayInitVal(MiniCParser::ArrayInitValContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFuncDef(MiniCParser::FuncDefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitVoidReturnType(MiniCParser::VoidReturnTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitIntReturnType(MiniCParser::IntReturnTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFloatReturnType(MiniCParser::FloatReturnTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFuncFParams(MiniCParser::FuncFParamsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFuncFParam(MiniCParser::FuncFParamContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitBlock(MiniCParser::BlockContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitBlockDeclaration(MiniCParser::BlockDeclarationContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -59,23 +103,47 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAssignmentStatement(MiniCParser::AssignmentStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitExpressionStatement(MiniCParser::ExpressionStatementContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitExpr(MiniCParser::ExprContext *ctx) override {
+  virtual std::any visitNestedBlockStatement(MiniCParser::NestedBlockStatementContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitAddExp(MiniCParser::AddExpContext *ctx) override {
+  virtual std::any visitIfElseStatement(MiniCParser::IfElseStatementContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitAddOp(MiniCParser::AddOpContext *ctx) override {
+  virtual std::any visitWhileLoopStatement(MiniCParser::WhileLoopStatementContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitUnaryExp(MiniCParser::UnaryExpContext *ctx) override {
+  virtual std::any visitBreakStatement(MiniCParser::BreakStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitContinueStatement(MiniCParser::ContinueStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitReturnStmt(MiniCParser::ReturnStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitExp(MiniCParser::ExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitCond(MiniCParser::CondContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitLVal(MiniCParser::LValContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -83,11 +151,55 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitRealParamList(MiniCParser::RealParamListContext *ctx) override {
+  virtual std::any visitNumber(MiniCParser::NumberContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitLVal(MiniCParser::LValContext *ctx) override {
+  virtual std::any visitUnaryExpPrimary(MiniCParser::UnaryExpPrimaryContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitUnaryExpFuncCall(MiniCParser::UnaryExpFuncCallContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitUnaryOpUnaryExp(MiniCParser::UnaryOpUnaryExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitUnaryOp(MiniCParser::UnaryOpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFuncRParams(MiniCParser::FuncRParamsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMulExp(MiniCParser::MulExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAddExp(MiniCParser::AddExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitRelExp(MiniCParser::RelExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitEqExp(MiniCParser::EqExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitLAndExp(MiniCParser::LAndExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitLOrExp(MiniCParser::LOrExpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitConstExp(MiniCParser::ConstExpContext *ctx) override {
     return visitChildren(ctx);
   }
 

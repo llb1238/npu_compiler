@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 #include "ConstInt.h"
+#include "ConstFloat.h"
 #include "Type.h"
 #include "GlobalVariable.h"
 #include "Function.h"
@@ -109,6 +110,7 @@ public:
     /// \param intVal 整数值
     /// \return 临时Value
     ConstInt * newConstInt(int32_t intVal);
+    ConstFloat * newConstFloat(float floatVal);
 
     /// @brief 新建变量型Value，会根据currentFunc的值进行判断创建全局或者局部变量
     /// ! 该函数只有在AST遍历生成线性IR中使用，其它地方不能使用
@@ -124,7 +126,7 @@ public:
 
     /// @brief 清理Module中管理的所有信息资源
     void Delete();
-
+    Value * newArrayValue(Type * type, std::string name, std::vector<int32_t> index);
     /// @brief 输出线性IR指令列表
     /// @param filePath
     void outputIR(const std::string & filePath);
@@ -134,11 +136,25 @@ public:
     ///
     void renameIR();
 
+    /// @brief 新建常量型Value，创建的变量对象应该标记为“只读/常量”
+    /// @param name 常量ID
+    /// @param type 常量类型
+    Value * newConstValue(Type * type, std::string name);
+    GlobalVariable * newGlobalVariable(Type * type, std::string name, bool inBSS = false);
+    GlobalVariable * findGlobalVariable(std::string name);
+    Value * findVar(std::string name);
+    Value * newconstArray(Type * type, std::string name, std::vector<int32_t> index);
+
 protected:
     /// @brief 根据整数值获取当前符号
     /// \param name 变量名
     /// \return 变量对应的值
     ConstInt * findConstInt(int32_t val);
+
+    /// @brief 根据整数值获取当前符号
+    /// \param name 变量名
+    /// \return 变量对应的值
+    ConstFloat * findConstFloat(float floatVal);
 
     ///
     /// @brief 新建全局变量，要求name必须有效，并且加入到全局符号表中。
@@ -146,12 +162,11 @@ protected:
     /// @param name 名字
     /// @return Value* 全局变量
     ///
-    GlobalVariable * newGlobalVariable(Type * type, std::string name);
+    // GlobalVariable * newGlobalVariable(Type * type, std::string name);
 
     /// @brief 根据变量名获取当前符号（只管理全局变量）
     /// \param name 变量名
     /// \return 变量对应的值
-    GlobalVariable * findGlobalVariable(std::string name);
 
     /// @brief 直接插入函数到符号表中，不考虑现有的表中是否存在
     /// @param func 函数对象
@@ -164,6 +179,10 @@ protected:
     /// @brief ConstInt插入到符号表中
     /// @param val Value信息
     void insertConstIntDirectly(ConstInt * val);
+
+    /// @brief ConstFloat插入到符号表中
+    /// @param val Value信息
+    void insertConstFloatDirectly(ConstFloat * val);
 
 private:
     ///
@@ -196,4 +215,7 @@ private:
 
     /// @brief 常量表
     std::unordered_map<int32_t, ConstInt *> constIntMap;
+
+    // 存储浮点常量
+    std::unordered_map<float, ConstFloat *> constFloatMap;
 };

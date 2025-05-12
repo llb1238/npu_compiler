@@ -20,8 +20,8 @@
 ///
 /// @brief 唯一的VOID类型实例
 ///
-IntegerType * IntegerType::oneInstanceBool;
-IntegerType * IntegerType::oneInstanceInt;
+IntegerType * IntegerType::oneInstanceBool = new IntegerType(1);
+IntegerType * IntegerType::oneInstanceInt = new IntegerType(32);
 
 ///
 /// @brief 获取类型bool
@@ -29,10 +29,6 @@ IntegerType * IntegerType::oneInstanceInt;
 ///
 IntegerType * IntegerType::getTypeBool()
 {
-    // 只维持一份
-    if (!oneInstanceBool) {
-        oneInstanceBool = new IntegerType(1);
-    }
     return oneInstanceBool;
 }
 
@@ -42,10 +38,5 @@ IntegerType * IntegerType::getTypeBool()
 ///
 IntegerType * IntegerType::getTypeInt()
 {
-    // 只维持一份
-    if (!oneInstanceInt) {
-        oneInstanceInt = new IntegerType(32);
-    }
-
     return oneInstanceInt;
 }

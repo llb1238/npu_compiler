@@ -31,11 +31,6 @@
 ///
 class User : public Value {
 
-    ///
-    /// @brief 操作数列表，指向当前Value的所有操作数
-    ///
-    std::vector<Use *> operands;
-
 public:
     ///
     /// @brief 构造函数
@@ -111,4 +106,9 @@ public:
     /// @brief 清除所有的操作数
     ///
     void clearOperands();
+
+    ///
+    /// @brief define-operator链，这个定值被使用的所有边，即所有被User使用的操作数
+    ///
+    std::vector<Use *> operand;
 };

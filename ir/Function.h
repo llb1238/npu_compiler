@@ -43,6 +43,11 @@ public:
     /// @brief 注意：IR指令代码并未释放，需要手动释放
     ~Function();
 
+    std::string processMultiDimArray(Value * Var,
+                                     const std::vector<int32_t> & dims,
+                                     const std::vector<FlattenedArrayElement> & flattenedArray,
+                                     size_t currentIndex,
+                                     int32_t flatOffset);
     /// @brief 获取函数返回类型
     /// @return 返回类型
     Type * getReturnType();
@@ -87,7 +92,7 @@ public:
     }
 
     ///
-    /// @brief  检查是否是函数
+    /// @brief  棢查是否是函数
     /// @return true 是函数
     /// @return false 不是函数
     ///
@@ -139,7 +144,10 @@ public:
     /// @param name 变量ID
     /// @param type 变量类型
     /// @param existInit 缺省为true。若真，则已存在需要进行初始化，否则什么都不做
-    LocalVariable * newLocalVarValue(Type * type, std::string name = "", int32_t scope_level = 1);
+    LocalVariable * newLocalVarValue(Type * type,
+                                     std::string name = "",
+                                     int32_t scope_level = 1,
+                                     std::vector<int32_t> * _dimensions = nullptr);
 
     /// @brief 新建一个内存型的Value，并加入到符号表，用于后续释放空间
     /// \param type 变量类型
@@ -169,6 +177,11 @@ public:
     /// @brief 用于统计ARG指令个数的清零
     ///
     void realArgCountReset();
+
+    void addParams(const std::vector<FormalParam *> & paramList)
+    {
+        params.insert(params.end(), paramList.begin(), paramList.end());
+    }
 
 private:
     ///

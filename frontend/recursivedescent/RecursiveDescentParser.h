@@ -2,8 +2,8 @@
 /// @file RecursiveDescentParser.h
 /// @brief 递归下降分析法实现的语法分析后产生抽象语法树的头文件
 /// @author zenglj (zenglj@live.com)
-/// @version 1.1
-/// @date 2024-11-23
+/// @version 1.0
+/// @date 2024-11-21
 ///
 /// @copyright Copyright (c) 2024
 ///
@@ -11,7 +11,6 @@
 /// <table>
 /// <tr><th>Date       <th>Version <th>Author  <th>Description
 /// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
-/// <tr><td>2024-11-23 <td>1.1     <td>zenglj  <td>表达式版增强
 /// </table>
 ///
 #pragma once
@@ -34,12 +33,11 @@ enum RDTokenType {
     T_L_BRACE,
     T_R_BRACE,
     T_SEMICOLON,
-    T_COMMA,
 
     T_RETURN,
-	T_ASSIGN,
-	T_ADD,
-    T_SUB,
+
+
+
 };
 
 /// @brief 词法与语法分析数据交互的Token的值类型

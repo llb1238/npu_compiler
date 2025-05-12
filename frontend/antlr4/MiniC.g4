@@ -1,88 +1,121 @@
 grammar MiniC;
 
-// 词法规则名总是以大写字母开头
+// 核心编译单元
+compUnit: (decl | funcDef)* EOF;
 
-// 语法规则名总是以小写字母开头
+// 声明部分（常量/变量）
+decl: constDecl # constDeclaration | varDecl # varDeclaration;
 
-// 每个非终结符尽量多包含闭包、正闭包或可选符等的EBNF范式描述
+// 常量声明
+constDecl: 'const' bType constDef (',' constDef)* ';';
 
-// 若非终结符由多个产生式组成，则建议在每个产生式的尾部追加# 名称来区分，详细可查看非终结符statement的描述
+// 基本类型系统（支持 int 和 int float 混合类型）
+bType: 'int' # intType | 'float' # floatType;
 
-// 语法规则描述：EBNF范式
+// 常量定义（标量/数组）
+constDef: Ident ('[' constExp ']')* '=' constInitVal;
 
-// 源文件编译单元定义
-compileUnit: (funcDef | varDecl)* EOF;
+// 常量初始化值
+constInitVal:
+	constExp										# scalarConstInitVal
+	| '{' (constInitVal (',' constInitVal)*)? '}'	# arrayConstInitVal;
 
-// 函数定义，目前不支持形参，也不支持返回void类型等
-funcDef: T_INT T_ID T_L_PAREN T_R_PAREN block;
+// 变量声明
+varDecl: bType varDef (',' varDef)* ';';
 
-// 语句块看用作函数体，这里允许多个语句，并且不含任何语句
-block: T_L_BRACE blockItemList? T_R_BRACE;
+// 变量定义（可选初始化）
+varDef: Ident ('[' constExp ']')* ('=' initVal)?;
 
-// 每个ItemList可包含至少一个Item
-blockItemList: blockItem+;
+// 变量初始化
+initVal:
+	exp									# scalarInitVal
+	| '{' (initVal (',' initVal)*)? '}'	# arrayInitVal;
 
-// 每个Item可以是一个语句，或者变量声明语句
-blockItem: statement | varDecl;
+// 函数定义
+funcDef: funcType Ident '(' funcFParams? ')' block;
 
-// 变量声明，目前不支持变量含有初值
-varDecl: basicType varDef (T_COMMA varDef)* T_SEMICOLON;
+// 函数返回类型
+funcType:
+	'void'		# voidReturnType
+	| 'int'		# intReturnType
+	| 'float'	# floatReturnType;
 
-// 基本类型
-basicType: T_INT;
+// 函数形参列表
+funcFParams: funcFParam (',' funcFParam)*;
 
-// 变量定义
-varDef: T_ID;
+// 单个形参（支持多维数组参数）
+funcFParam: bType Ident ('[' ']' ('[' exp ']')*)?;
 
-// 目前语句支持return和赋值语句
-statement:
-	T_RETURN expr T_SEMICOLON			# returnStatement
-	| lVal T_ASSIGN expr T_SEMICOLON	# assignStatement
-	| block								# blockStatement
-	| expr? T_SEMICOLON					# expressionStatement;
+// 语句块
+block: '{' blockItem* '}';
 
-// 表达式文法 expr : AddExp 表达式目前只支持加法与减法运算
-expr: addExp;
+// 块内元素
+blockItem: decl # blockDeclaration | stmt # blockStatement;
 
-// 加减表达式
-addExp: unaryExp (addOp unaryExp)*;
+// 语句系统
+stmt:
+	lVal '=' exp ';'						# assignmentStatement
+	| exp? ';'								# expressionStatement
+	| block									# nestedBlockStatement
+	| 'if' '(' cond ')' stmt ('else' stmt)?	# ifElseStatement
+	| 'while' '(' cond ')' stmt				# whileLoopStatement
+	| 'break' ';'							# breakStatement
+	| 'continue' ';'						# continueStatement
+	| 'return' exp? ';'						# returnStmt; // 新增 return 语句规则
 
-// 加减运算符
-addOp: T_ADD | T_SUB;
+// 表达式体系
+exp: addExp;
+
+// 条件表达式
+cond: lOrExp;
+
+// 左值访问
+lVal: Ident ('[' exp ']')*;
+
+// 基础表达式
+primaryExp: '(' exp ')' | lVal | number;
+
+// 数值类型
+number: IntConst | FloatConst;
 
 // 一元表达式
-unaryExp: primaryExp | T_ID T_L_PAREN realParamList? T_R_PAREN;
+unaryExp:
+	primaryExp # UnaryExpPrimary 
+	| Ident '(' funcRParams? ')' # UnaryExpFuncCall 
+	| unaryOp unaryExp # UnaryOpUnaryExp;
 
-// 基本表达式：括号表达式、整数、左值表达式
-primaryExp: T_L_PAREN expr T_R_PAREN | T_DIGIT | lVal;
+// 一元运算符
+unaryOp: '+' | '-' | '!';
 
 // 实参列表
-realParamList: expr (T_COMMA expr)*;
+funcRParams: exp (',' exp)*;
 
-// 左值表达式
-lVal: T_ID;
+// 算术表达式层级（保持优先级）
+mulExp: unaryExp (('*' | '/' | '%') unaryExp)*;
 
-// 用正规式来进行词法规则的描述
+addExp: mulExp (('+' | '-') mulExp)*;
 
-T_L_PAREN: '(';
-T_R_PAREN: ')';
-T_SEMICOLON: ';';
-T_L_BRACE: '{';
-T_R_BRACE: '}';
+relExp: addExp (('<' | '>' | '<=' | '>=') addExp)*;
 
-T_ASSIGN: '=';
-T_COMMA: ',';
+eqExp: relExp (('==' | '!=') relExp)*;
 
-T_ADD: '+';
-T_SUB: '-';
+lAndExp: eqExp ('&&' eqExp)*;
 
-// 要注意关键字同样也属于T_ID，因此必须放在T_ID的前面，否则会识别成T_ID
-T_RETURN: 'return';
-T_INT: 'int';
-T_VOID: 'void';
+lOrExp: lAndExp ('||' lAndExp)*;
 
-T_ID: [a-zA-Z_][a-zA-Z0-9_]*;
-T_DIGIT: '0' | [1-9][0-9]*;
+// 常量表达式
+constExp: addExp;
 
-/* 空白符丢弃 */
-WS: [ \r\n\t]+ -> skip;
+// return 
+
+RETURN: 'return';
+
+// 词法规则
+Ident: [a-zA-Z_] [a-zA-Z0-9_]*;
+IntConst: [1-9][0-9]* | '0';
+FloatConst: [0-9]+ '.' [0-9]* | '.' [0-9]+;
+
+// 空白和注释
+Whitespace: [ \t\r\n]+ -> skip;
+BlockComment: '/*' .*? '*/' -> skip;
+LineComment: '//' ~[\r\n]* -> skip;

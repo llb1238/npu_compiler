@@ -45,7 +45,7 @@ bool Antlr4Executor::run()
     MiniCParser parser{&tokenStream};
 
     // 从具体语法树的根结点进行深度优先遍历，生成抽象语法树
-    auto cstRoot = parser.compileUnit();
+    auto cstRoot = parser.compUnit();
     if (!cstRoot) {
         minic_log(LOG_ERROR, "Antlr4的词语与语法分析错误");
         return false;

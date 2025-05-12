@@ -2,8 +2,8 @@
 /// @file RecursiveDescentFlex.cpp
 /// @brief 词法分析的手动实现源文件
 /// @author zenglj (zenglj@live.com)
-/// @version 1.1
-/// @date 2024-11-23
+/// @version 1.0
+/// @date 2024-11-21
 ///
 /// @copyright Copyright (c) 2024
 ///
@@ -11,7 +11,6 @@
 /// <table>
 /// <tr><th>Date       <th>Version <th>Author  <th>Description
 /// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
-/// <tr><td>2024-11-23 <td>1.1     <td>zenglj  <td>表达式版增强
 /// </table>
 ///
 #include <cctype>
@@ -138,24 +137,6 @@ int rd_flex()
         tokenKind = RDTokenType::T_SEMICOLON;
         // 存储字符;
         tokenValue = ";";
-    } else if (c == '+') {
-        // 识别字符+
-        tokenKind = RDTokenType::T_ADD;
-		// 存储字符+
-        tokenValue = "+";
-    } else if (c == '-') {
-        // 识别字符-
-        tokenKind = RDTokenType::T_SUB;
-		// 存储字符-
-        tokenValue = "-";
-    } else if (c == '=') {
-        // 识别字符=
-        tokenKind = RDTokenType::T_ASSIGN;
-    }  else if (c == ',') {
-        // 识别字符;
-        tokenKind = RDTokenType::T_COMMA;
-		// 存储字符,
-        tokenValue = ",";
     } else if (isLetterUnderLine(c)) {
         // 识别标识符，包含关键字/保留字或自定义标识符
 

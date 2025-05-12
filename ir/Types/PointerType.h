@@ -77,7 +77,15 @@ public:
             this->depth = 1;
         }
     }
+    static PointerType * getNonConstPointerType(Type * baseType)
+    {
 
+        // 调用 PointerType::get 获取指针类型
+        const PointerType * constPointerType = PointerType::get(baseType);
+
+        // 使用 const_cast 移除 const 限定符
+        return const_cast<PointerType *>(constPointerType);
+    }
     ///
     /// @brief 返回根类型，也就是连续解引用后的类型
     /// @return const Type*
@@ -124,13 +132,17 @@ public:
     {
         return pointeeType->toString() + "*";
     }
+    const Type * getreferencetype()
+    {
+        return pointeeType;
+    }
+    const Type * pointeeType = nullptr;
 
 private:
     ///
     /// @brief 指针直接指向的类型，在指针操作中只解引用一次
     /// 例如：指针类型[3 x i32]***的指向类型为[3 x i32]**，只取掉最后一个*
     ///
-    const Type * pointeeType = nullptr;
 
     ///
     /// @brief 所有指针操作都解引用后指向的元素类型，不再是指针类型

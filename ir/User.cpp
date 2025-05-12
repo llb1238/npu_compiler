@@ -31,10 +31,11 @@ User::User(Type * _type) : Value(_type)
 /// @param pos 位置
 /// @param val 操作数
 ///
+///
 void User::setOperand(int32_t pos, Value * val)
 {
-    if (pos < (int32_t) operands.size()) {
-        operands[pos]->setUsee(val);
+    if (pos < (int32_t) uses.size()) {
+        uses[pos]->setUsee(val);
     }
 }
 
@@ -49,7 +50,7 @@ void User::addOperand(Value * val)
     auto use = new Use(val, this);
 
     // 增加到操作数中
-    operands.push_back(use);
+    uses.push_back(use);
 
     // 该val被使用
     val->addUse(use);
@@ -61,7 +62,7 @@ void User::addOperand(Value * val)
 ///
 void User::removeOperand(Value * val)
 {
-    for (auto & use: operands) {
+    for (auto & use: uses) {
         if (use->getUsee() == val) {
             // 找到了就删除这个Use
             use->remove();
@@ -78,11 +79,11 @@ void User::removeOperand(Value * val)
 void User::removeOperand(int pos)
 {
     // 检索并清除边，使得边的两头都会自动减少
-    if (pos < (int32_t) operands.size()) {
+    if (pos < (int32_t) uses.size()) {
 
         // 必须先暂存后释放，不能直接delete uses[pos]
         // 这是因为use->remove会删除operands的元素，使得operands[pos]的对象不再是原来的对象
-        Use * use = operands[pos];
+        Use * use = uses[pos];
         use->remove();
         delete use;
     }
@@ -94,9 +95,9 @@ void User::removeOperand(int pos)
 ///
 void User::removeOperandRaw(Use * use)
 {
-    auto pIter = std::find(operands.begin(), operands.end(), use);
-    if (pIter != operands.end()) {
-        operands.erase(pIter);
+    auto pIter = std::find(uses.begin(), uses.end(), use);
+    if (pIter != uses.end()) {
+        uses.erase(pIter);
     }
 }
 
@@ -106,8 +107,8 @@ void User::removeOperandRaw(Use * use)
 ///
 void User::removeUse(Use * use)
 {
-    auto pIter = std::find(operands.begin(), operands.end(), use);
-    if (pIter != operands.end()) {
+    auto pIter = std::find(uses.begin(), uses.end(), use);
+    if (pIter != uses.end()) {
         use->remove();
     }
 }
@@ -117,12 +118,12 @@ void User::removeUse(Use * use)
 ///
 void User::clearOperands()
 {
-    for (int32_t pos = 0; pos < (int32_t) operands.size();) {
+    for (int32_t pos = 0; pos < (int32_t) uses.size();) {
 
         // 必须先暂存后释放，不能直接delete uses[pos]
         // 这是因为use->remove会删除operands的元素，使得operands[pos]的对象不再是原来的对象
 
-        Use * use = operands[pos];
+        Use * use = uses[pos];
         use->remove();
         delete use;
     }
@@ -133,7 +134,7 @@ void User::clearOperands()
 ///
 std::vector<Use *> & User::getOperands()
 {
-    return operands;
+    return uses;
 }
 
 ///
@@ -143,7 +144,7 @@ std::vector<Use *> & User::getOperands()
 std::vector<Value *> User::getOperandsValue()
 {
     std::vector<Value *> operandsVec;
-    for (auto & use: operands) {
+    for (auto & use: uses) {
         operandsVec.emplace_back(use->getUsee());
     }
     return operandsVec;
@@ -155,7 +156,7 @@ std::vector<Value *> User::getOperandsValue()
 ///
 int32_t User::getOperandsNum()
 {
-    return (int32_t) operands.size();
+    return (int32_t) uses.size();
 }
 
 ///
@@ -165,8 +166,8 @@ int32_t User::getOperandsNum()
 ///
 Value * User::getOperand(int32_t pos)
 {
-    if (pos < (int32_t) operands.size()) {
-        return operands[pos]->getUsee();
+    if (pos < (int32_t) uses.size()) {
+        return uses[pos]->getUsee();
     }
 
     return nullptr;
