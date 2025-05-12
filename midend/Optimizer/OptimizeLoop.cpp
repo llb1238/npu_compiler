@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <unordered_set>
-#include "../../../include/midend/Optimizer/OptimizeLoop.h"
+#include "../../midend/Optimizer/OptimizeLoop.h"
 //判断是否是循环不变量
 bool isInVar(RawBasicBlock* bb,RawValue * value,Loop * loop,unordered_map<RawValue *,bool> v_values,map<RawBasicBlock *,set<RawValue *>> in)
 {

@@ -1,9 +1,9 @@
-#include "../../../include/midend/SSA/rename.h"
-#include "../../../include/midend/IR/Programme.h"
-#include "../../../include/midend/IR/Function.h"
-#include "../../../include/midend/IR/BasicBlock.h"
-#include "../../../include/midend/IR/Value.h"
-#include "../../../include/midend/IR/ValueKind.h"
+#include "../../midend/SSA/rename.h"
+#include "../../midend/IR/Programme.h"
+#include "../../midend/IR/Function.h"
+#include "../../midend/IR/BasicBlock.h"
+#include "../../midend/IR/Value.h"
+#include "../../midend/IR/ValueKind.h"
 #include <cassert>
 #include <queue>
 #include <iostream>

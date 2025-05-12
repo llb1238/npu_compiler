@@ -1,7 +1,7 @@
-#include "../../../include/midend/IR/Function.h"
-#include "../../../include/midend/IR/BasicBlock.h"
-#include "../../../include/midend/IR/Programme.h"
-#include "../../../include/midend/SSA/DT.h"
+#include "../../midend/IR/Function.h"
+#include "../../midend/IR/BasicBlock.h"
+#include "../../midend/IR/Programme.h"
+#include "../../midend/SSA/DT.h"
 #include <set>
 #include <assert.h>
 #include <stack>

@@ -1,7 +1,7 @@
 %code requires {
   #include <memory>
   #include <string>
-  #include <common.h>
+  #include "../utils/common.h"
   #include <string.h>
 }
 
@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 #include <string.h>
-#include <common.h>
+#include "../utils/common.h"
 
 // 声明 lexer 函数和错误处理函数
 int yylex();

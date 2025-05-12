@@ -1,62 +1,77 @@
-#include "../../../include/midend/IR/IRBuilder.h"
-IRBuilder* irBuilder;
+#include "../../midend/IR/IRBuilder.h"
+IRBuilder * irBuilder;
 
-RawProgramme *getTempProgramme(){
+RawProgramme * getTempProgramme()
+{
     return irBuilder->tempProgramme;
 }
 
-RawFunction *getTempFunction(){
+RawFunction * getTempFunction()
+{
     return irBuilder->tempFunction;
 }
 
-RawBasicBlock *getTempBasicBlock(){
+RawBasicBlock * getTempBasicBlock()
+{
     return irBuilder->tempBasicBlock;
 }
 
-bool getFinished(){
+bool getFinished()
+{
     return irBuilder->BBFinished;
 }
 
-void setFinished(bool finished){
+void setFinished(bool finished)
+{
     irBuilder->BBFinished = finished;
 }
 
-void setTempProgramme(RawProgramme *tempProgramme){
+void setTempProgramme(RawProgramme * tempProgramme)
+{
     irBuilder->tempProgramme = tempProgramme;
 }
 
-void setTempFunction(RawFunction *tempFunction){
+void setTempFunction(RawFunction * tempFunction)
+{
     irBuilder->tempFunction = tempFunction;
 }
 
-void setTempBasicBlock(RawBasicBlock *tempBasicBlock){
+void setTempBasicBlock(RawBasicBlock * tempBasicBlock)
+{
     irBuilder->tempBasicBlock = tempBasicBlock;
 }
 
-RawBasicBlock * getTempWhileEntry(){
+RawBasicBlock * getTempWhileEntry()
+{
     return irBuilder->WhileEntryRecord.top();
 }
 
-RawBasicBlock * getTempWhileEnd(){
+RawBasicBlock * getTempWhileEnd()
+{
     return irBuilder->WhileEndRecord.top();
 }
 
-void pushTempWhileEntry(RawBasicBlock *we){
-    irBuilder->WhileEntryRecord.push(we); 
+void pushTempWhileEntry(RawBasicBlock * we)
+{
+    irBuilder->WhileEntryRecord.push(we);
 }
 
-void popTempWhileEntry(){
+void popTempWhileEntry()
+{
     irBuilder->WhileEntryRecord.pop();
 }
 
-void pushTempWhileEnd(RawBasicBlock *we){
+void pushTempWhileEnd(RawBasicBlock * we)
+{
     irBuilder->WhileEndRecord.push(we);
 }
 
-void popTempWhileEnd(){
+void popTempWhileEnd()
+{
     irBuilder->WhileEndRecord.pop();
 }
 
-bool InWhile() {
+bool InWhile()
+{
     return !irBuilder->WhileEndRecord.empty();
 }
