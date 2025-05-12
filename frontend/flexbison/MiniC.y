@@ -259,26 +259,38 @@ VarDecl : VarDeclExpr T_SEMICOLON {
 
 // 变量声明表达式，可支持逗号分隔定义多个
 VarDeclExpr
-    : BasicType VarDef {
-        ast_node * decl_node = $2;
-        // 创建类型节点
-        ast_node * type_node = create_type_node($1);
+  /* 第一种：第一个变量，类型+定义（可能带初始化）*/
+  : BasicType VarDef {
+      // $2 本身就是一个 AST_OP_VAR_DECL 节点（只有名字或名字+initval）
+      ast_node * decl = $2;
+      // 1 新建类型节点
+      ast_node * typeNode = create_type_node($1);
+      // 2 把类型挂到 var-decl 的最前面
+      decl->sons.insert(decl->sons.begin(), typeNode);
+      // 3 把 decl->type 同步为这个类型
+      decl->type = typeNode->type;
+      // 4 用单参版本把它包成 decl-stmt
+      $$ = create_var_decl_stmt_node(decl);
+  }
+  /* 第二种：逗号分隔的后续变量，只带名字也可能带 initval */
+  | VarDeclExpr T_COMMA VarDef {
+      // $1 是上一次返回的 decl-stmt
+      ast_node * stmt = $1;
+      // $3 是新产生的 AST_OP_VAR_DECL（只有名字或名字+initval）
+      ast_node * decl = $3;
+      // 从 stmt->type 里拿到原来的类型（BasicType 转换过来的 Type*）
+      Type * t = stmt->type;
+      // 新建一个类型节点
+      ast_node * typeNode = ast_node::New(t);
+      // 插到 decl（var-decl）的最前面
+      decl->sons.insert(decl->sons.begin(), typeNode);
+      // 同步 decl->type
+      decl->type = t;
+      // 把这个新的 var-decl 接到同一个 decl-stmt 下
+      $$ = stmt->insert_son_node(decl);
+  }
+  ;
 
-        decl_node->sons.insert(decl_node->sons.begin(), type_node);
-        
-        // 创建变量定义节点
-        decl_node->type = type_node->type;
-        // 创建变量声明语句，并加入第一个变量
-        $$ = create_var_decl_stmt_node(decl_node);
-    }
-    | VarDeclExpr T_COMMA VarDef {
-        Type * t = $1->sons[0]->type;
-        ast_node * type_node = ast_node::New(t);
-        $3->sons.insert($3->sons.begin(), type_node);
-        $3->type = t;
-        $$ = $1->insert_son_node($3);
-    }
-	;
 
 
 // 变量定义包含变量名，实际上还有初值，这里没有实现。

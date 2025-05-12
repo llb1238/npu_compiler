@@ -58,6 +58,15 @@ string getNodeName(ast_node * astnode)
         case ast_operator_type::AST_OP_RETURN:
             nodeName = "return";
             break;
+        case ast_operator_type::AST_OP_DECL_STMT:
+            nodeName = "decl-stmt";
+            break;
+        case ast_operator_type::AST_OP_INITVAL:
+            nodeName = "initval";
+            break;
+        case ast_operator_type::AST_OP_IF_ELSE_STMT:
+            nodeName = "if-else-stmt";
+            break;
         case ast_operator_type::AST_OP_FUNC_DEF:
             nodeName = "func-def";
             break;
@@ -102,9 +111,6 @@ string getNodeName(ast_node * astnode)
         case ast_operator_type::AST_OP_NESTED_BLOCK:
             nodeName = "nested-block";
             break;
-        case ast_operator_type::AST_OP_IF_ELSE_STMT:
-            nodeName = "if-else-stmt";
-            break;
         case ast_operator_type::AST_OP_EXP:
             nodeName = "exp";
             break;
@@ -119,6 +125,58 @@ string getNodeName(ast_node * astnode)
             break;
         case ast_operator_type::AST_OP_FUNC_RPARAMS:
             nodeName = "func-rparams";
+            break;
+        // ─── 把 Bison AST 用到的运算符都加上 ─────────────────────────────
+        case ast_operator_type::AST_OP_CONST_INITVAL:
+            nodeName = "const-initval";
+            break;
+        case ast_operator_type::AST_OP_ASSIGN:
+            nodeName = "=";
+            break;
+        case ast_operator_type::AST_OP_ADD:
+            nodeName = "+";
+            break;
+        case ast_operator_type::AST_OP_SUB:
+            nodeName = "-";
+            break;
+        case ast_operator_type::AST_OP_MUL:
+            nodeName = "*";
+            break;
+        case ast_operator_type::AST_OP_DIV:
+            nodeName = "/";
+            break;
+        case ast_operator_type::AST_OP_LT:
+            nodeName = "<";
+            break;
+        case ast_operator_type::AST_OP_LE:
+            nodeName = "<=";
+            break;
+        case ast_operator_type::AST_OP_GT:
+            nodeName = ">";
+            break;
+        case ast_operator_type::AST_OP_GE:
+            nodeName = ">=";
+            break;
+        case ast_operator_type::AST_OP_EQ:
+            nodeName = "==";
+            break;
+        case ast_operator_type::AST_OP_NEQ:
+            nodeName = "!=";
+            break;
+        case ast_operator_type::AST_OP_AND:
+            nodeName = "&&";
+            break;
+        case ast_operator_type::AST_OP_OR:
+            nodeName = "||";
+            break;
+        case ast_operator_type::AST_OP_NEG:
+            nodeName = "NEG";
+            break;
+        case ast_operator_type::AST_OP_NOT:
+            nodeName = "!";
+            break;
+        case ast_operator_type::AST_OP_IF:
+            nodeName = "if";
             break;
         case ast_operator_type::AST_OP_MUL_EXP: {
             // 显示乘法表达式的运算符
